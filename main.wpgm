@@ -10,7 +10,7 @@ program Ajedrez2 {
     keyboard.s().onPressDo({reyNegro.moverAbajo()})
 	keyboard.space().onPressDo({reyNegro.disparar()})
 
-	game.onCollideDo(bala1, {peon1.recibirDanio()})
+	game.onCollideDo(bala1, {peon1=>peon1.recibirDanio()})
 
 	game.onTick(10000, "apareceEnemigo", {agregarEnemigo.aparecerPieza()})
 

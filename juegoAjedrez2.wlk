@@ -34,7 +34,14 @@ object reyNegro {
 
   method recibirDanio() {
     vida -= 20
-    game.say(self, "Mi vida es de ")
+    game.say(self, "Mi vida es de " + vida)
+    self.morir()
+  }
+
+  method morir() {
+    if(vida == 0) {
+      game.removeVisual(self)
+    }
   }
 
   method sumarPuntos(enemigo) {
@@ -72,12 +79,13 @@ class PEON {
       reyNegro.recibirDanio()
       game.removeVisual(self)
     } else {
-    position = position.left(1)
+      position = position.left(1)
     }
   }
 
   method recibirDanio() {
     vida = 0.max(vida - 25)
+    self.morir()
   }
   method morir() {
     if(vida == 0) {
@@ -267,7 +275,8 @@ object agregarEnemigo {
   var numeroPieza = 0
 
   method numeroRandom() {
-    numeroPieza = 0.randomUpTo(6)
+    numeroPieza = 1.randomUpTo(5)
+    numeroPieza = numeroPieza.round()
   }
 
   method aparecerPieza() {
