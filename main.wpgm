@@ -1,16 +1,20 @@
 import wollok.game.*
 
-import pepita.*
+import juegoAjedrez2.*
 
-program PepitaGame {
-	game.title("Pepita")
-	game.height(10)
-	game.width(10)
-	game.cellSize(100)
-
-	game.addVisual(pepita)
-
-	keyboard.w().onPressDo({ pepita.fly(1) })
-
+program Ajedrez2 {
+	juegoAjedrez2.iniciar()
 	game.start()
+	
+	keyboard.w().onPressDo({reyNegro.moverArriba()})
+    keyboard.s().onPressDo({reyNegro.moverAbajo()})
+	keyboard.space().onPressDo({reyNegro.disparar()})
+
+	game.onCollideDo(bala1, {peon1.recibirDanio()})
+
+	game.onTick(10000, "apareceEnemigo", {agregarEnemigo.aparecerPieza()})
+
+	game.onTick(5000,"moversePeon", {peon1.moverse()})
+	game.onTick(2500, "moverseCaballo", {caballo1.moverse()})
+	game.onTick(1000,"disparo",{bala1.moverse()})
 }
