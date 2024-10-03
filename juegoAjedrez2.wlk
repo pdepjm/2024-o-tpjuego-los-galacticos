@@ -6,6 +6,7 @@ object juegoAjedrez2{
 
     game.addVisualCharacter(reyNegro)
     game.addVisual(peon1)
+    //spawEnemigo.comenzarSpaw()
   }
 }
 
@@ -14,6 +15,7 @@ object reyNegro {
   var puntaje = 0
   var position = game.at(0,2)
 
+  method vida() = vida 
   method image() = "reyNegro.png" 
 
   method moverArriba() {
@@ -29,7 +31,9 @@ object reyNegro {
   method position() = position 
 
   method disparar() {
-    game.addVisual(bala1)
+    const balaNueva = new Bala()
+    game.addVisual(balaNueva)
+    balaNueva.empezarMoverse()
   }
 
   method recibirDanio() {
@@ -49,7 +53,7 @@ object reyNegro {
   }
 }
 
-class BALA {
+class Bala {
   var position = reyNegro.position()
 
   method image() = "bala.png" 
@@ -62,6 +66,9 @@ class BALA {
     } else {
       position = position.right(1)
     }
+  }
+  method empezarMoverse() {
+    game.onTick(1000, "moverse", {self.moverse()})
   }
 }
 
@@ -261,7 +268,6 @@ class REINA {
 
 const peon1 = new PEON()
 const caballo1 = new CABALLO()
-const bala1 = new BALA()
 const alfil1 = new ALFIL()
 const torre1 = new TORRE()
 const reina1 = new REINA()
@@ -271,7 +277,7 @@ const reina1 = new REINA()
 // Torre -> Mucha vida
 // Rey -> Mucha vida, mueve rapido y cada vez que le pegan se mueve para arriba o abajo
 
-object agregarEnemigo {
+object spawEnemigo {
   var numeroPieza = 0
 
   method numeroRandom() {
@@ -282,6 +288,8 @@ object agregarEnemigo {
   method aparecerPieza() {
     self.numeroRandom()
     if(numeroPieza == 1) {
+      // const peonNuevo = new PEON()
+      // game.addVisual(peonNuevo)
       game.addVisual(peon1)
     } else {
       if(numeroPieza == 2) {
@@ -302,3 +310,4 @@ object agregarEnemigo {
     }
   }
 }
+

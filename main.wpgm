@@ -10,11 +10,8 @@ program Ajedrez2 {
     keyboard.s().onPressDo({reyNegro.moverAbajo()})
 	keyboard.space().onPressDo({reyNegro.disparar()})
 
-	game.onCollideDo(bala1, {peon1=>peon1.recibirDanio()})
-
-	game.onTick(10000, "apareceEnemigo", {agregarEnemigo.aparecerPieza()})
+	game.onTick(10000, "apareceEnemigo", {spawEnemigo.aparecerPieza()})
 
 	game.onTick(5000,"moversePeon", {peon1.moverse()})
 	game.onTick(2500, "moverseCaballo", {caballo1.moverse()})
-	game.onTick(1000,"disparo",{bala1.moverse()})
 }

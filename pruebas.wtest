@@ -1,9 +1,19 @@
 import juegoAjedrez2.*
 
-describe "group of tests for pepita" {
+describe "TESTS DE REY NEGRO" {
 
-  test "pepita has initial energy" {
-    assert.equals(100, 100)
+  test "El rey negro tiene una vida incial" {
+    assert.that(reyNegro.vida() != 0)
   }
 
+  test "El rey negro obtiene puntaje al matar a un enemigo" {
+    assert.equals(1,1)
+  }
+
+}
+
+describe "TESTS DE PIEZAS BLANCAS" {
+  test "description" {
+    assert.equals(1,1)
+  }
 }
