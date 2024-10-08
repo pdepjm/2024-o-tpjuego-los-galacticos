@@ -1,4 +1,4 @@
-#  Chest Royale 
+#  Chess Royale 
 
 UTN - Facultad Regional Buenos Aires - Materia Paradigmas de Programación
 
