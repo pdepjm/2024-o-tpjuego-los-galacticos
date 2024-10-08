@@ -6,7 +6,7 @@ UTN - Facultad Regional Buenos Aires - Materia Paradigmas de Programación
 
 - Santino Bouvet
 - Franco Vinaccia
-- Santino Sommaruaga
+- Santino Sommaruga
 - Felipe Pampin
 - Lautaro Pingitore
  
