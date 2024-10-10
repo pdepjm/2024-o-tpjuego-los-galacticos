@@ -22,6 +22,8 @@ object reyNegro {
   var puntaje = 0
   var position = game.at(0,2)
 
+  var cooldown = 1
+
   method vida() = vida 
   method image() = "reyNegro.png" 
 
@@ -38,10 +40,14 @@ object reyNegro {
   method position() = position 
 
   method disparar() {
-    const balaNueva = new Bala()
-    game.addVisual(balaNueva)
-    balaNueva.empezarMoverse()
-    game.onCollideDo(balaNueva, {peonNuevo=>self.reaccionar(peonNuevo, balaNueva)})
+    if(cooldown ==1){
+      const balaNueva = new Bala()
+      cooldown = 0
+      game.addVisual(balaNueva)
+      balaNueva.empezarMoverse()
+      game.onCollideDo(balaNueva, {peonNuevo=>self.reaccionar(peonNuevo, balaNueva)})
+      game.schedule(3000, { cooldown =1 })
+    }
   }
 
   method reaccionar(peon, bala){
@@ -64,6 +70,7 @@ object reyNegro {
   method sumarPuntos(enemigo) {
     puntaje += enemigo.puntaje()
   }
+
 }
 
 class Bala {
