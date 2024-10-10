@@ -41,7 +41,12 @@ object reyNegro {
     const balaNueva = new Bala()
     game.addVisual(balaNueva)
     balaNueva.empezarMoverse()
-    game.onCollideDo(balaNueva, {peonNuevo=>peonNuevo.recibirDanio()})
+    game.onCollideDo(balaNueva, {peonNuevo=>self.reaccionar(peonNuevo, balaNueva)})
+  }
+
+  method reaccionar(peon, bala){
+    peon.recibirDanio()
+    game.removeVisual(bala)
   }
 
   method recibirDanio() {
@@ -78,6 +83,7 @@ class Bala {
   method empezarMoverse() {
     game.onTick(1000, "moverse", {self.moverse()})
   }
+  
 }
 
 class Peon {
@@ -99,7 +105,7 @@ class Peon {
   }
 
   method recibirDanio() {
-    vida = 0.max(vida - 100)
+    vida = 0.max(vida - 50)
     self.morir()
   }
 
@@ -110,8 +116,9 @@ class Peon {
     }
   }
   method empezarMoverse() {
-	  game.onTick(5000,"moversePeon", {self.moverse()})
+	  game.onTick(1000,"moverse", {self.moverse()})
   }
+
 }
 
 // class CABALLO {
@@ -296,7 +303,7 @@ class Peon {
 object spawnEnemigo {
 
   method comenzarSpawn() {
-    game.onTick(10000, "apareceEnemigo", {self.aparecerPieza()})
+    game.onTick(5000, "apareceEnemigo", {self.aparecerPieza()})
   }
 
   var numeroPieza = 0
