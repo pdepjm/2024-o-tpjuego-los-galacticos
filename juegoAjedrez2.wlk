@@ -13,9 +13,6 @@ object juegoAjedrez2{
     keyboard.w().onPressDo({reyNegro.moverArriba()})
     keyboard.s().onPressDo({reyNegro.moverAbajo()})
 	  keyboard.space().onPressDo({reyNegro.disparar()})
-
-    // game.onCollideDo(balaNueva, {peonNuevo=>peonNuevo.recibirDanio()})
-
   }
 }
   
@@ -44,6 +41,7 @@ object reyNegro {
     const balaNueva = new Bala()
     game.addVisual(balaNueva)
     balaNueva.empezarMoverse()
+    game.onCollideDo(balaNueva, {peonNuevo=>peonNuevo.recibirDanio()})
   }
 
   method recibirDanio() {
@@ -308,6 +306,8 @@ object spawnEnemigo {
     numeroPieza = numeroPieza.round()
   }
 
+
+  // para usar menos ifs podriamos hacer que cada tropa spawnee cada cierto tick 
   method aparecerPieza() {
     self.numeroRandom()
     if(numeroPieza == 1) {
