@@ -45,18 +45,18 @@ object reyNegro {
       cooldown = 0
       game.addVisual(balaNueva)
       balaNueva.empezarMoverse()
-      game.onCollideDo(balaNueva, {peonNuevo=>self.reaccionar(peonNuevo, balaNueva)})
+      game.onCollideDo(balaNueva, {objeto=>self.reaccionar(objeto, balaNueva)})
       game.schedule(3000, { cooldown =1 })
     }
   }
 
-  method reaccionar(peon, bala){
-    peon.recibirDanio()
+  method reaccionar(objeto, bala){
+    objeto.recibirDanio(50)
     game.removeVisual(bala)
   }
 
-  method recibirDanio() {
-    vida -= 20
+  method recibirDanio(danio) {
+    vida -= danio
     game.say(self, "Mi vida es de " + vida)
     self.morir()
   }
@@ -90,35 +90,39 @@ class Bala {
   method empezarMoverse() {
     game.onTick(1000, "moverse", {self.moverse()})
   }
-  
+  method recibirDanio(x){
+  }
 }
 
 class Peon {
   var vida = 100
   const property puntaje = 100
-  var position = game.at(8,0.randomUpTo(6))
+  var position = game.at(8,0.randomUpTo(4).round())
   const property numeroAparicion = 1
+  var danioAEfectuar = 20
 
   method position() = position 
   method image() = "peon.png" 
 
   method moverse() {
-    if(position.x() == 1) {
-      reyNegro.recibirDanio()
+    if(position.x() == 0) {
+      reyNegro.recibirDanio(danioAEfectuar)
       game.removeVisual(self)
     } else {
       position = position.left(1)
     }
   }
 
-  method recibirDanio() {
-    vida = 0.max(vida - 50)
+  method recibirDanio(danio) {
+    vida = 0.max(vida - danio)
     self.morir()
-  }
+    position = position.right(1)
+  }
 
   method morir() {
     if(vida == 0) {
       reyNegro.sumarPuntos(self)
+      danioAEfectuar = 0
       game.removeVisual(self)
     }
   }
@@ -128,40 +132,68 @@ class Peon {
 
 }
 
-// class CABALLO {
+class Caballo {
 
-//   method empezarMoverse() {
-//     game.onTick(2500, "moverseCaballo", {self.moverse()})
-//   }
+  method empezarMoverse() {
+    game.onTick(1000, "moverseCaballo", {self.moverse()})
+  }
 
-//   var vida = 75
-//   const property puntaje = 150
-//   var position = game.at(8,0.randomUpTo(6))
-//   const property numeroAparicion = 2
+  var vida = 75
+  const property puntaje = 150
+  var position = game.at(8,0.randomUpTo(4).round())
+  const property numeroAparicion = 2
+  var danioAEfectuar = 20
 
-//   method position() = position
-//   method image() = "caballo.png" 
+  method position() = position
+  method image() = "caballo.png" 
 
-//   method moverse() {
-//     if(position.x() == 1) {
-//       reyNegro.recibirDanio()
-//       game.removeVisual(self)
-//     } else {
-//     position = position.left(1)
-//     }
-//   }
+  method moverse() {
+    if(position.x() == 0) {
+      reyNegro.recibirDanio(danioAEfectuar)
+      game.removeVisual(self)
+    } else {
+      self.randomArribaOAbajo()
+      if(arribaOAbajo>0){
+        position = position.up(1)
+        position = position.left(1)
+      }
+      else{
+        position = position.down(1)
+        position = position.left(1)
+      }
+    }
+  }
 
-//   method recibirDanio() {
-//     vida = 0.max(vida - 25)
-//   }
-//   method morir() {
-//     if(vida == 0) {
-//       reyNegro.sumarPuntos(self)
-//       game.removeVisual(self)
-//     }
-//   }
+  method recibirDanio(danio) {
+    vida = 0.max(vida - danio)
+    self.morir()
+  }
+  method morir() {
+    if(vida == 0) {
+      reyNegro.sumarPuntos(self)
+      game.removeVisual(self)
+      danioAEfectuar = 0
+    }
+  }
 
-// }
+  var arribaOAbajo = 0
+
+  method randomArribaOAbajo(){
+    if( position.y() == 0){
+      arribaOAbajo = 1
+    }
+    else{
+      if(position.y() == 4){
+        arribaOAbajo = -1
+      }
+      else{
+          arribaOAbajo = (-1).randomUpTo(1).round()
+      }
+    }
+  }
+
+
+}
 
 // class ALFIL {
 //   var vida = 100
@@ -316,7 +348,7 @@ object spawnEnemigo {
   var numeroPieza = 0
 
   method numeroRandom() {
-    numeroPieza = 1.randomUpTo(1) // deberia ser up to 5
+    numeroPieza = 2.randomUpTo(2).round() // deberia ser up to 5
     numeroPieza = numeroPieza.round()
   }
 
@@ -329,10 +361,13 @@ object spawnEnemigo {
       game.addVisual(peonNuevo)
       peonNuevo.empezarMoverse()
     } 
-    // else {
-    //   if(numeroPieza == 2) {
-    //     game.addVisual(caballo1)
-    //   } else {
+    else {
+      if(numeroPieza == 2) {
+        const caballoNuevo = new Caballo()
+        game.addVisual(caballoNuevo)
+        caballoNuevo.empezarMoverse()
+      } 
+    }//else {
     //     if(numeroPieza == 3) {
     //       game.addVisual(alfil1)
     //     } else {
