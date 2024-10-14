@@ -46,7 +46,7 @@ object reyNegro {
       game.addVisual(balaNueva)
       balaNueva.empezarMoverse()
       game.onCollideDo(balaNueva, {objeto=>self.reaccionar(objeto, balaNueva)})
-      game.schedule(3000, { cooldown =1 })
+      game.schedule(1500, { cooldown =1 })
     }
   }
 
@@ -88,7 +88,7 @@ class Bala {
     }
   }
   method empezarMoverse() {
-    game.onTick(1000, "moverse", {self.moverse()})
+    game.onTick(200, "moverse", {self.moverse()})
   }
   method recibirDanio(x){
   }
@@ -135,7 +135,7 @@ class Peon {
 class Caballo {
 
   method empezarMoverse() {
-    game.onTick(1000, "moverseCaballo", {self.moverse()})
+    game.onTick(2000, "moverseCaballo", {self.moverse()})
   }
 
   var vida = 75
@@ -342,13 +342,13 @@ class Caballo {
 object spawnEnemigo {
 
   method comenzarSpawn() {
-    game.onTick(5000, "apareceEnemigo", {self.aparecerPieza()})
+    game.onTick(3000, "apareceEnemigo", {self.aparecerPieza()})
   }
 
   var numeroPieza = 0
 
   method numeroRandom() {
-    numeroPieza = 2.randomUpTo(2).round() // deberia ser up to 5
+    numeroPieza = 1.randomUpTo(2).round() // deberia ser up to 5
     numeroPieza = numeroPieza.round()
   }
 
