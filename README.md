@@ -15,6 +15,7 @@ UTN - Facultad Regional Buenos Aires - Materia Paradigmas de Programación
 ![alfil](assets/alfil.png)
 ![bala](assets/bala.png)
 ![caballo](assets/caballo.png)
+![caballo dañado](assets/caballodañado.png)
 ![peon](assets/peon.png)
 ![reyna](assets/reina.png)
 ![reyNegro](assets/reyNegro.png)

@@ -145,7 +145,11 @@ class Caballo {
   var danioAEfectuar = 20
 
   method position() = position
-  method image() = "caballo.png" 
+
+  var imagenActual = "caballo.png"
+  method image() = imagenActual
+
+
 
   method moverse() {
     if(position.x() == 0) {
@@ -166,8 +170,16 @@ class Caballo {
 
   method recibirDanio(danio) {
     vida = 0.max(vida - danio)
+    self.cambiarImagenTemporal()
     self.morir()
+    
   }
+
+  method cambiarImagenTemporal(){
+    imagenActual = "caballodañado.png" // Cambia la imagen a 'caballodañado.png'
+    game.schedule(1000, { imagenActual = "caballo.png" }) // Después de 1 segundo, restaura la imagen original
+  }
+
   method morir() {
     if(vida == 0) {
       reyNegro.sumarPuntos(self)
