@@ -10,6 +10,7 @@ object juegoAjedrez2{
     game.height(5)
 	  game.width(9)
 
+    game.addVisual(fondo) 
     game.addVisualCharacter(reyNegro)
     spawnEnemigo.comenzarSpawn()
 
@@ -20,7 +21,7 @@ object juegoAjedrez2{
     // keyboard.r().onPressDo({ if(juegoPausado) self.reiniciarJuego() }) No funca esto
   }
 
-  method pausarJuego() {
+  method pausarJuego() { 
       juegoPausado = true
       game.say(self, "Presione R para reiniciar el juego")
   }
@@ -32,7 +33,10 @@ object juegoAjedrez2{
   }
   
 }
-  
+object fondo {
+  method image() = "fondo.png"
+  method position() = game.at(0, 0) // Asegúrate de ajustar la posición y tamaño si es necesario
+}
 
 object reyNegro {
   var vida = 100
