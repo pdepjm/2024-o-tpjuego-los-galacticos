@@ -3,6 +3,9 @@ import main.*
 
 object juegoAjedrez2{
 
+  var juegoPausado = false
+  method estaPausado() = juegoPausado
+
   method iniciar(){
     game.height(5)
 	  game.width(9)
@@ -13,7 +16,21 @@ object juegoAjedrez2{
     keyboard.w().onPressDo({reyNegro.moverArriba()})
     keyboard.s().onPressDo({reyNegro.moverAbajo()})
 	  keyboard.space().onPressDo({reyNegro.disparar()})
+
+    // keyboard.r().onPressDo({ if(juegoPausado) self.reiniciarJuego() }) No funca esto
   }
+
+  method pausarJuego() {
+      juegoPausado = true
+      game.say(self, "Presione R para reiniciar el juego")
+  }
+  method reiniciarJuego() {
+      juegoPausado = false
+      reyNegro.reiniciarPersonaje()
+      game.clear()
+      self.iniciar()
+  }
+  
 }
   
 
@@ -26,6 +43,7 @@ object reyNegro {
 
   method vida() = vida 
   method image() = "reyNegro.png" 
+  method puntaje() = puntaje
 
   method moverArriba() {
     if(position != game.at(0,4)) {
@@ -40,13 +58,13 @@ object reyNegro {
   method position() = position 
 
   method disparar() {
-    if(cooldown ==1){
+    if(cooldown == 1){
       const balaNueva = new Bala()
       cooldown = 0
       game.addVisual(balaNueva)
       balaNueva.empezarMoverse()
       game.onCollideDo(balaNueva, {objeto=>self.reaccionar(objeto, balaNueva)})
-      game.schedule(1500, { cooldown =1 })
+      game.schedule(1000, { cooldown =1 })
     }
   }
 
@@ -56,13 +74,14 @@ object reyNegro {
   }
 
   method recibirDanio(danio) {
-    vida -= danio
+    vida = vida - danio
     game.say(self, "Mi vida es de " + vida)
     self.morir()
   }
 
   method morir() {
     if(vida == 0) {
+      puntajeFinal.terminarJuego()
       game.removeVisual(self)
     }
   }
@@ -71,6 +90,27 @@ object reyNegro {
     puntaje += enemigo.puntaje()
   }
 
+  method reiniciarPersonaje() {
+    vida = 100
+    puntaje = 0
+    position = game.at(0,2)
+  }
+}
+
+object puntajeFinal {
+  var puntaje = 0
+  method position() = game.center()
+  method text() = "EL PUNTAJE FUE DE " + puntaje + " PUNTOS"
+  method textColor() = "D02323" 
+
+  method actualizarPuntaje() {
+    puntaje = reyNegro.puntaje()
+  }
+  method terminarJuego() {
+    juegoAjedrez2.pausarJuego()
+    self.actualizarPuntaje()
+    game.addVisual(self)
+  }
 }
 
 class Bala {
@@ -105,11 +145,13 @@ class Peon {
   method image() = "peon.png" 
 
   method moverse() {
-    if(position.x() == 0) {
+    if(!juegoAjedrez2.estaPausado()) {
+      if(position.x() == 0) {
       reyNegro.recibirDanio(danioAEfectuar)
       game.removeVisual(self)
-    } else {
-      position = position.left(1)
+      } else {
+        position = position.left(1)
+      }
     }
   }
 
@@ -149,21 +191,21 @@ class Caballo {
   var imagenActual = "caballo.png"
   method image() = imagenActual
 
-
-
   method moverse() {
-    if(position.x() == 0) {
-      reyNegro.recibirDanio(danioAEfectuar)
-      game.removeVisual(self)
-    } else {
-      self.randomArribaOAbajo()
-      if(arribaOAbajo>0){
-        position = position.up(1)
-        position = position.left(1)
-      }
-      else{
-        position = position.down(1)
-        position = position.left(1)
+    if(!juegoAjedrez2.estaPausado()) {
+        if(position.x() == 0) {
+        reyNegro.recibirDanio(danioAEfectuar)
+        game.removeVisual(self)
+      } else {
+        self.randomArribaOAbajo()
+        if(arribaOAbajo>0){
+          position = position.up(1)
+          position = position.left(1)
+        }
+        else{
+          position = position.down(1)
+          position = position.left(1)
+        }
       }
     }
   }
@@ -354,7 +396,7 @@ class Caballo {
 object spawnEnemigo {
 
   method comenzarSpawn() {
-    game.onTick(3000, "apareceEnemigo", {self.aparecerPieza()})
+    game.onTick(3000, "apareceEnemigo", {if(!juegoAjedrez2.estaPausado()) self.aparecerPieza()})
   }
 
   var numeroPieza = 0
