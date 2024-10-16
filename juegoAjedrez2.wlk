@@ -10,8 +10,8 @@ object juegoAjedrez2{
     game.height(5)
 	  game.width(9)
 
-    game.addVisual(fondo) 
     game.addVisualCharacter(reyNegro)
+    game.boardGround("fondo.png")
     spawnEnemigo.comenzarSpawn()
 
     keyboard.w().onPressDo({reyNegro.moverArriba()})
@@ -32,10 +32,6 @@ object juegoAjedrez2{
       self.iniciar()
   }
   
-}
-object fondo {
-  method image() = "fondo.png"
-  method position() = game.at(0, 0) // Asegúrate de ajustar la posición y tamaño si es necesario
 }
 
 object reyNegro {
