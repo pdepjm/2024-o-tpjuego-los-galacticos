@@ -19,7 +19,7 @@ object juegoAjedrez2{
     keyboard.w().onPressDo({reyNegro.moverArriba()})
     keyboard.s().onPressDo({reyNegro.moverAbajo()})
 	  keyboard.space().onPressDo({reyNegro.disparar()})
-    keyboard.p().onPressDo({ self.pausarJuego() })
+    keyboard.p().onPressDo({ self.pausarJuego() ; pausa.agregarTextoDePausa()})
     keyboard.r().onPressDo({ self.reiniciarJuego() })
 
   }
@@ -29,10 +29,12 @@ object juegoAjedrez2{
       juegoPausado = true
       game.say(self, "Presione R para reiniciar el juego")
       reyNegro.elJugadorPauso(verdadero)
+      
   }
   method reiniciarJuego() {
       juegoPausado = false
       reyNegro.elJugadorPauso(falso)
+      pausa.quitarTextoPausa()
   }
   
 }
@@ -118,6 +120,19 @@ object puntajeFinal {
     juegoAjedrez2.pausarJuego()
     self.actualizarPuntaje()
     game.addVisual(self)
+  }
+}
+
+object pausa{
+  method position() = game.center()
+  method text() = "ESTAS EN PAUSA, PRESIONE R PARA SEGUIR JUGANDO"
+  method textColor() = "D02323"
+  
+  method agregarTextoDePausa() {
+    game.addVisual(self)
+  }
+  method quitarTextoPausa() {
+    game.removeVisual(self)
   }
 }
 
