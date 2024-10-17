@@ -5,6 +5,8 @@ object juegoAjedrez2{
 
   var juegoPausado = false
   method estaPausado() = juegoPausado
+  const verdadero = true
+  const falso = false
 
   method iniciar(){
     game.height(5)
@@ -17,19 +19,20 @@ object juegoAjedrez2{
     keyboard.w().onPressDo({reyNegro.moverArriba()})
     keyboard.s().onPressDo({reyNegro.moverAbajo()})
 	  keyboard.space().onPressDo({reyNegro.disparar()})
+    keyboard.p().onPressDo({ self.pausarJuego() })
+    keyboard.r().onPressDo({ self.reiniciarJuego() })
 
-    // keyboard.r().onPressDo({ if(juegoPausado) self.reiniciarJuego() }) No funca esto
   }
+
 
   method pausarJuego() { 
       juegoPausado = true
       game.say(self, "Presione R para reiniciar el juego")
+      reyNegro.elJugadorPauso(verdadero)
   }
   method reiniciarJuego() {
       juegoPausado = false
-      reyNegro.reiniciarPersonaje()
-      game.clear()
-      self.iniciar()
+      reyNegro.elJugadorPauso(falso)
   }
   
 }
@@ -40,25 +43,26 @@ object reyNegro {
   var position = game.at(0,2)
 
   var cooldown = 1
+  var elJugadorPauso = false
 
   method vida() = vida 
   method image() = "reyNegro.png" 
   method puntaje() = puntaje
 
   method moverArriba() {
-    if(position != game.at(0,4)) {
+    if(position != game.at(0,4) && !elJugadorPauso ) {
     position = position.up(1)
     }
   } 
   method moverAbajo() {
-    if(position != game.at(0,0)) {
+    if(position != game.at(0,0) && !elJugadorPauso) {
     position = position.down(1)
     }
   } 
   method position() = position 
 
   method disparar() {
-    if(cooldown == 1){
+    if(cooldown == 1 && !elJugadorPauso){
       const balaNueva = new Bala()
       cooldown = 0
       game.addVisual(balaNueva)
@@ -94,6 +98,10 @@ object reyNegro {
     vida = 100
     puntaje = 0
     position = game.at(0,2)
+  }
+
+  method elJugadorPauso(booleano){
+    elJugadorPauso = booleano
   }
 }
 
