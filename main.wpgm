@@ -3,6 +3,6 @@ import wollok.game.*
 import juegoAjedrez2.*
 
 program Ajedrez2 {
-	juegoAjedrez2.iniciar()
+	juegoAjedrez2.pantallaInicio()
 	game.start()
 }

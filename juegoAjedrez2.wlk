@@ -9,9 +9,7 @@ object juegoAjedrez2{
   const falso = false
 
   method iniciar(){
-    game.height(5)
-	  game.width(9)
-
+    game.removeVisual(pantallaInicio)
     game.addVisualCharacter(reyNegro)
     game.boardGround("fondo.png")
     spawnEnemigo.comenzarSpawn()
@@ -24,6 +22,14 @@ object juegoAjedrez2{
 
   }
 
+  method pantallaInicio() {
+    game.height(5)
+	  game.width(9)
+    game.addVisualCharacter(pantallaInicio)
+    juegoPausado = true
+    reyNegro.elJugadorPauso(verdadero)      
+    self.iniciar()
+  }
 
   method pausarJuego() { 
       juegoPausado = true
@@ -37,6 +43,11 @@ object juegoAjedrez2{
       pausa.quitarTextoPausa()
   }
   
+}
+
+object pantallaInicio {
+  method position() = game.center()
+  method image() = "pantallaInicio.png"
 }
 
 object reyNegro {
@@ -405,7 +416,6 @@ class Caballo {
 //   }
 // }
 
-// const caballo1 = new CABALLO()
 // const alfil1 = new ALFIL()
 // const torre1 = new TORRE()
 // const reina1 = new REINA()
