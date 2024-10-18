@@ -17,3 +17,11 @@ describe "TESTS DE PIEZAS BLANCAS" {
     assert.equals(1,1)
   }
 }
+
+//Tests posibles:
+
+// que cuando una pieza recibe un disparo sea afectada (el mensaje reaccionar de la bala)
+// que cuando una pieza toca al rey le reste vida (el recibirDanio)
+// que el rey sume puntos cuando mate una pieza
+// que cuando una pieza llegue al fondo le baje la vida
+// que las piezas se muevan correctamente 

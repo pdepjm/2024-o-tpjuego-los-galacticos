@@ -7,7 +7,8 @@ object juegoAjedrez2{
   method estaPausado() = juegoPausado
   const verdadero = true
   const falso = false
-
+  const miLista = []
+  
   method iniciar(){
     game.height(5)
 	  game.width(9)
@@ -23,7 +24,10 @@ object juegoAjedrez2{
     keyboard.r().onPressDo({ self.reiniciarJuego() })
 
   }
-
+  method agregarVisual(visual) {
+    game.addVisual(visual)
+    miLista.add(visual)
+  }
 
   method pausarJuego() { 
       juegoPausado = true
@@ -67,7 +71,7 @@ object reyNegro {
     if(cooldown == 1 && !elJugadorPauso){
       const balaNueva = new Bala()
       cooldown = 0
-      game.addVisual(balaNueva)
+      juegoAjedrez2.agregarVisual(balaNueva)
       balaNueva.empezarMoverse()
       game.onCollideDo(balaNueva, {objeto=>self.reaccionar(objeto, balaNueva)})
       game.schedule(1000, { cooldown =1 })
@@ -158,11 +162,13 @@ class Bala {
 }
 
 class Peon {
+  const eventoTick = new Tick(interval = 1000, action = {self.moverse()} )
+
   var vida = 100
   const property puntaje = 100
   var position = game.at(8,0.randomUpTo(4).round())
   const property numeroAparicion = 1
-  var danioAEfectuar = 20
+  const danioAEfectuar = 20
 
   method position() = position 
   method image() = "peon.png" 
@@ -171,7 +177,7 @@ class Peon {
     if(!juegoAjedrez2.estaPausado()) {
       if(position.x() == 0) {
       reyNegro.recibirDanio(danioAEfectuar)
-      game.removeVisual(self)
+      self.morir()
       } else {
         position = position.left(1)
       }
@@ -187,27 +193,28 @@ class Peon {
   method morir() {
     if(vida == 0) {
       reyNegro.sumarPuntos(self)
-      danioAEfectuar = 0
-      game.removeVisual(self)
     }
+    game.removeVisual(self)
+    eventoTick.stop()
   }
   method empezarMoverse() {
-	  game.onTick(1000,"moverse", {self.moverse()})
+	  eventoTick.start()
   }
 
 }
 
 class Caballo {
+  const eventoTick = new Tick(interval = 2000, action = {self.moverse()})
 
   method empezarMoverse() {
-    game.onTick(2000, "moverseCaballo", {self.moverse()})
+    eventoTick.start()
   }
 
   var vida = 75
   const property puntaje = 150
   var position = game.at(8,0.randomUpTo(4).round())
   const property numeroAparicion = 2
-  var danioAEfectuar = 20
+  const danioAEfectuar = 20
 
   method position() = position
 
@@ -218,7 +225,7 @@ class Caballo {
     if(!juegoAjedrez2.estaPausado()) {
         if(position.x() == 0) {
         reyNegro.recibirDanio(danioAEfectuar)
-        game.removeVisual(self)
+        self.morir()
       } else {
         self.randomArribaOAbajo()
         if(arribaOAbajo>0){
@@ -248,9 +255,9 @@ class Caballo {
   method morir() {
     if(vida == 0) {
       reyNegro.sumarPuntos(self)
-      game.removeVisual(self)
-      danioAEfectuar = 0
     }
+    game.removeVisual(self)
+    eventoTick.stop()
   }
 
   var arribaOAbajo = 0
@@ -422,42 +429,11 @@ object spawnEnemigo {
     game.onTick(3000, "apareceEnemigo", {if(!juegoAjedrez2.estaPausado()) self.aparecerPieza()})
   }
 
-  var numeroPieza = 0
-
-  method numeroRandom() {
-    numeroPieza = 1.randomUpTo(2).round() // deberia ser up to 5
-    numeroPieza = numeroPieza.round()
-  }
-
-
-  // para usar menos ifs podriamos hacer que cada tropa spawnee cada cierto tick 
+  // Además repite lógica 
   method aparecerPieza() {
-    self.numeroRandom()
-    if(numeroPieza == 1) {
-      const peonNuevo = new Peon()
-      game.addVisual(peonNuevo)
-      peonNuevo.empezarMoverse()
-    } 
-    else {
-      if(numeroPieza == 2) {
-        const caballoNuevo = new Caballo()
-        game.addVisual(caballoNuevo)
-        caballoNuevo.empezarMoverse()
-      } 
-    }//else {
-    //     if(numeroPieza == 3) {
-    //       game.addVisual(alfil1)
-    //     } else {
-    //       if(numeroPieza == 4) {
-    //         game.addVisual(torre1)
-    //       } else {
-    //         if(numeroPieza == 5) {
-    //           game.addVisual(reina1)
-    //         }
-    //       }
-    //     }
-    //   }
-    // }
+    const pieza = [new Peon(), new Caballo()].anyOne()
+    game.addVisual(pieza) // pasarlo a la pieza
+    pieza.empezarMoverse()
   }
 }
 
