@@ -11,9 +11,7 @@ object juegoAjedrez2{
   method iniciar(){
     game.removeVisual(pantallaInicio)
     game.addVisualCharacter(reyNegro)
-    game.boardGround("fondo.png")
     spawnEnemigo.comenzarSpawn()
-
     keyboard.w().onPressDo({reyNegro.moverArriba()})
     keyboard.s().onPressDo({reyNegro.moverAbajo()})
 	  keyboard.space().onPressDo({reyNegro.disparar()})
@@ -25,11 +23,11 @@ object juegoAjedrez2{
   method pantallaInicio() {
     game.height(5)
 	  game.width(9)
-    game.addVisualCharacter(pantallaInicio)
-    juegoPausado = true
-    reyNegro.elJugadorPauso(verdadero)      
-    self.iniciar()
+    game.boardGround("fondo.png")
+    game.addVisualCharacter(pantallaInicio)      
+    keyboard.i().onPressDo({self.iniciar()})
   }
+
 
   method pausarJuego() { 
       juegoPausado = true
@@ -46,8 +44,8 @@ object juegoAjedrez2{
 }
 
 object pantallaInicio {
-  method position() = game.center()
-  method image() = "pantallaInicio.png"
+  method position() = game.at(0,0)
+  method image() = "pantalla.png"
 }
 
 object reyNegro {
