@@ -3,25 +3,71 @@ import juegoAjedrez2.*
 describe "TESTS DE REY NEGRO" {
 
   test "El rey negro tiene una vida incial" {
-    assert.that(reyNegro.vida() != 0)
+    assert.notThat(reyNegro.vida() == 0)
   }
 
   test "El rey negro obtiene puntaje al matar a un enemigo" {
-    assert.equals(1,1)
+    const peon = new Peon()
+    peon.recibirDanio(peon.vida())
+    assert.notThat(reyNegro.puntaje() == 0)
+  }
+
+  test "El rey negro recibe danio cuando una pieza llega a la columna del rey" {
+    const vidaInicial = reyNegro.vida()
+    const peon = new Peon()
+    peon.cambiarPosicion(game.at(1, 2))
+    peon.moverse()
+    assert.notThat(reyNegro.vida() == vidaInicial)
   }
 
 }
 
 describe "TESTS DE PIEZAS BLANCAS" {
-  test "description" {
-    assert.equals(1,1)
+  test "La pieza recibe danio cuando recibe un disparo" {
+    const peon = new Peon()
+    const vidaInicial = peon.vida()
+    const bala = new Bala()
+    reyNegro.reaccionar(peon, bala)
+    assert.notThat(peon.vida() == vidaInicial)
   }
+
+  test "El peon retrocede cuando recibe un disparo" {
+    const peon = new Peon()
+    const xInicial = peon.position().x()
+    const bala = new Bala()
+    reyNegro.reaccionar(peon, bala)
+    assert.notThat(peon.position().x() == xInicial)
+  }
+
+  test "El caballo cambia la imagen cuando recibe un disparo" {
+    const caballo = new Caballo()
+    const imagenInicial = caballo.image()
+    const bala = new Bala()
+    reyNegro.reaccionar(caballo, bala)
+    assert.notThat(caballo.image() == imagenInicial)
+  }
+
+  test "El peon se mueve uno para adelante" {
+    const peon = new Peon()
+    const xInicial = peon.position().x()
+    peon.moverse()
+    assert.notThat(peon.position().x() == xInicial)
+  }
+  
+  test "El caballo se mueve uno para delante y uno para arriba o abajo" {
+    const caballo = new Caballo()
+    const xIncial = caballo.position().x()
+    const yInical = caballo.position().y()
+    caballo.moverse()
+    assert.notThat(caballo.position().x() == xIncial)
+    assert.that(caballo.position().y() == yInical + 1 || caballo.position().y() == yInical - 1)
+  }
+
+  // OJO CON ESTA, REVISAR
+  // test "La pieza desaparece al llegar a la columna del rey" {
+  //   const peon = new Peon()
+  //   peon.cambiarPosicion(game.at(1,2))
+  //   peon.moverse()
+  //   assert.notThat(peon)
+  // }
 }
-
-//Tests posibles:
-
-// que cuando una pieza recibe un disparo sea afectada (el mensaje reaccionar de la bala)
-// que cuando una pieza toca al rey le reste vida (el recibirDanio)
-// que el rey sume puntos cuando mate una pieza
-// que cuando una pieza llegue al fondo le baje la vida
-// que las piezas se muevan correctamente 
