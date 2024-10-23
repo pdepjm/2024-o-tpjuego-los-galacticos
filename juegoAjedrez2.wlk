@@ -18,18 +18,25 @@ object juegoAjedrez2{
 
     self.agregarPersonaje(reyNegro)
     game.boardGround("fondo.png")
-    spawnEnemigo.comenzarSpawn()
-
     keyboard.w().onPressDo({reyNegro.moverArriba()})
     keyboard.s().onPressDo({reyNegro.moverAbajo()})
 	  keyboard.space().onPressDo({reyNegro.disparar()})
-    keyboard.p().onPressDo(
-      { if(!juegoPausado) {self.pausarJuego() pausa.agregarTextoDePausa()}
+    spawnEnemigo.comenzarSpawn()
+
+    keyboard.p().onPressDo({
+      if(!juegoPausado) {
+        self.pausarJuego() 
+        pausa.agregarTextoDePausa()
+        }
         else self.reanudarJuego()
       })
     keyboard.r().onPressDo(
-      { if(juegoTerminado) 
-        {self.removerVisual(puntajeFinal) self.iniciar() juegoPausado = false}  
+      { if(juegoTerminado) {
+        puntajeFinal.reiniciarPuntos()
+        self.removerVisual(puntajeFinal)
+        self.iniciar()
+        juegoPausado = false
+        }  
       })
     
 
@@ -43,10 +50,9 @@ object juegoAjedrez2{
     game.addVisual(visual)
     listaVisuales.add(visual)
   }
-  method agregarEvento(tiempo, accion) {
-    const eventoTick = new Tick(interval = tiempo, action = accion)
-    listaEventos.add(eventoTick)
-    return eventoTick
+  method agregarEvento(evento) {
+    listaEventos.add(evento)
+    evento.start()
   }
   method removerVisual(visual) {
     game.removeVisual(visual)
@@ -59,6 +65,9 @@ object juegoAjedrez2{
   method removerPersonaje(personaje) {
     game.removeVisual(personaje)
     listaPersonajes.remove(personaje)    
+  }
+  method bloquearTeclasMovimientoRey() {
+    
   }
 
   method pausarJuego() { 
@@ -158,6 +167,9 @@ object puntajeFinal {
     juegoAjedrez2.terminarJuego()
     juegoAjedrez2.agregarVisual(self)
   }
+  method reiniciarPuntos() {
+    puntaje = 0
+  }
 }
 
 object pausa{
@@ -174,7 +186,7 @@ object pausa{
 }
 
 class Bala {
-  const evento = juegoAjedrez2.agregarEvento(200, {self.moverse()})
+  const moverse = new Tick(interval = 200, action = {self.moverse()})
   var position = reyNegro.position().right(1)
 
   method image() = "bala.png" 
@@ -183,22 +195,22 @@ class Bala {
   method moverse() {
     if(position.x() == 8) {
       juegoAjedrez2.removerVisual(self)
-      juegoAjedrez2.removerEvento(evento)
+      juegoAjedrez2.removerEvento(moverse)
     } else {
       position = position.right(1)
     }
   }
   method empezarMoverse() {
-    evento.start()
+    juegoAjedrez2.agregarEvento(moverse)
   }
 
 }
 
 class Peon {
-  const evento = juegoAjedrez2.agregarEvento(1500, {self.moverse()})
+  const moverse = new Tick(interval = 1500, action = {self.moverse()})
 
   method empezarMoverse() {
-    evento.start()
+    juegoAjedrez2.agregarEvento(moverse)
   }
 
   var vida = 100
@@ -228,12 +240,12 @@ class Peon {
   }
 
   method morir(llegoFinal) {
-    var debeMorir = false
     if(vida == 0) {
       reyNegro.sumarPuntos(self)
-      debeMorir = true
-    } else if(debeMorir || llegoFinal) {
-      juegoAjedrez2.removerEvento(evento)
+      juegoAjedrez2.removerEvento(moverse)
+      juegoAjedrez2.removerVisual(self)
+    } else if(llegoFinal) {
+      juegoAjedrez2.removerEvento(moverse)
       juegoAjedrez2.removerVisual(self)
     }
   }
@@ -245,17 +257,16 @@ class Peon {
 }
 
 class Caballo {
-  const evento = new Tick(interval = 2000, action = {self.moverse()})
+  const moverse = new Tick(interval = 2000, action = {self.moverse()})
 
   method empezarMoverse() {
-    evento.start()
+    juegoAjedrez2.agregarEvento(moverse)
   }
 
   var vida = 75
   const property puntaje = 150
   var position = game.at(8,0.randomUpTo(4).round())
   const danioAEfectuar = 20
-  const arribaAbajo = [position.up(1),position.down(1)]
 
   method position() = position
 
@@ -264,7 +275,7 @@ class Caballo {
 
   method moverse() {
     if(!juegoAjedrez2.estaPausado()) {
-        if(position.x() == 1) {
+      if(position.x() == 1) {
         reyNegro.recibirDanio(danioAEfectuar)
         self.morir(true)
       } else {
@@ -275,9 +286,13 @@ class Caballo {
   }
 
   method randomArribaOAbajo() {
-    if(position.y() == 0) position = position.up(1)
-    else if(position.y() == 4) position = position.down(1)
-    else position = arribaAbajo.anyOne()
+    if(position.y() == 0) {
+      position = position.up(1)
+    } else if(position.y() == 4) {
+      position = position.down(1)
+    } else {
+      position = [position.up(1),position.down(1)].anyOne()
+    }
   }
 
   method recibirDanio(danio) {
@@ -293,16 +308,29 @@ class Caballo {
   }
 
   method morir(llegoFinal) {
-    var debeMorir = false
     if(vida == 0) {
-      reyNegro.sumarPuntos(self)
-      debeMorir = true
-    } else if(debeMorir || llegoFinal) {
-      juegoAjedrez2.removerEvento(evento)
-      juegoAjedrez2.removerVisual(self)
+    reyNegro.sumarPuntos(self)
+    juegoAjedrez2.removerEvento(moverse)
+    juegoAjedrez2.removerVisual(self)
+    } else if(llegoFinal) {
+    juegoAjedrez2.removerEvento(moverse)
+    juegoAjedrez2.removerVisual(self)
     }
   }
 
+}
+
+object spawnEnemigo {
+  method comenzarSpawn() {
+    const spawn = new Tick(interval = 3000, action = {if(!juegoAjedrez2.estaPausado()) self.aparecerPieza()})
+    juegoAjedrez2.agregarEvento(spawn)
+  }
+
+  method aparecerPieza() {
+    const pieza = [new Peon(), new Caballo()].anyOne()
+    juegoAjedrez2.agregarVisual(pieza)
+    pieza.empezarMoverse()
+  }
 }
 
 // class ALFIL {
@@ -447,18 +475,3 @@ class Caballo {
 // Alfin -> Al tener 25% se mueve arriba o abajo
 // Torre -> Mucha vida
 // Rey -> Mucha vida, mueve rapido y cada vez que le pegan se mueve para arriba o abajo
-
-
-object spawnEnemigo {
-  method comenzarSpawn() {
-    game.onTick(3000, "apareceEnemigo", {if(!juegoAjedrez2.estaPausado()) self.aparecerPieza()})
-  }
-
-  // Además repite lógica 
-  method aparecerPieza() {
-    const pieza = [new Peon(), new Caballo()].anyOne()
-    game.addVisual(pieza) // pasarlo a la pieza
-    pieza.empezarMoverse()
-  }
-}
-
