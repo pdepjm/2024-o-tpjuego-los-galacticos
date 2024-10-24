@@ -20,7 +20,9 @@ object juegoAjedrez2{
     self.agregarPersonaje(reyNegro)
     game.boardGround("fondo.png")
     spawnEnemigo.comenzarSpawn()
+    spawnEnemigo.comenzarOleadas()
     self.inicarTeclasUnicaVez()
+
   }
 
   method inicarTeclasUnicaVez() {
@@ -289,127 +291,26 @@ class Caballo inherits PiezaBlanca(vida = 75, puntajeDado = 100, danioAEfectuar 
   
 }
 
-
-
-
-// class Peon1 {
-//   const moverse = new Tick(interval = 1500, action = {self.moverse()})
-
-//   method empezarMoverse() {
-//     juegoAjedrez2.agregarEvento(moverse)
-//   }
-
-//   var vida = 100
-//   const property puntaje = 100
-//   var position = game.at(8,0.randomUpTo(4).round())
-//   const danioAEfectuar = 100000
-
-//   method position() = position 
-//   method image() = "peon.png" 
-
-//   method moverse() {
-//     if(!juegoAjedrez2.estaPausado()) {
-//       if(position.x() == 1) {
-//       reyNegro.recibirDanio(danioAEfectuar)
-//       self.morir(true)
-//       } else {
-//         position = position.left(1)
-//       }
-//     }
-//   }
-
-//   method recibirDanio(danio) {
-//     vida = vida - danio
-//     vida = 0.max(vida)
-//     self.morir(false)
-//     position = position.right(1)
-//   }
-
-//   method morir(llegoFinal) {
-//     if(vida == 0) {
-//       reyNegro.sumarPuntos(self)
-//       juegoAjedrez2.removerEvento(moverse)
-//       juegoAjedrez2.removerVisual(self)
-//     } else if(llegoFinal) {
-//       juegoAjedrez2.removerEvento(moverse)
-//       juegoAjedrez2.removerVisual(self)
-//     }
-//   }
-
-
-//   // FUNCIONES PARA TESTS
-//   method vida() = vida 
-//   method cambiarPosicion(nueva) { position = nueva}
-// }
-
-// class Caballo1 {
-//   const moverse = new Tick(interval = 2000, action = {self.moverse()})
-
-//   method empezarMoverse() {
-//     juegoAjedrez2.agregarEvento(moverse)
-//   }
-
-//   var vida = 75
-//   const property puntaje = 150
-//   var position = game.at(8,0.randomUpTo(4).round())
-//   const danioAEfectuar = 20
-
-//   method position() = position
-
-//   var imagenActual = "caballo.png"
-//   method image() = imagenActual
-
-//   method moverse() {
-//     if(!juegoAjedrez2.estaPausado()) {
-//       if(position.x() == 1) {
-//         reyNegro.recibirDanio(danioAEfectuar)
-//         self.morir(true)
-//       } else {
-//         self.randomArribaOAbajo()
-//         position = position.left(1)
-//       }
-//     }
-//   }
-
-//   method randomArribaOAbajo() {
-//     if(position.y() == 0) {
-//       position = position.up(1)
-//     } else if(position.y() == 4) {
-//       position = position.down(1)
-//     } else {
-//       position = [position.up(1),position.down(1)].anyOne()
-//     }
-//   }
-
-//   method recibirDanio(danio) {
-//     vida = vida - danio
-//     vida = 0.max(vida)
-//     self.cambiarImagenTemporal()
-//     self.morir(false)
-//   }
-
-//   method cambiarImagenTemporal(){
-//     imagenActual = "caballodañado.png" // Cambia la imagen a 'caballodañado.png'
-//     game.schedule(1000, { imagenActual = "caballo.png" }) // Después de 1 segundo, restaura la imagen original
-//   }
-
-//   method morir(llegoFinal) {
-//     if(vida == 0) {
-//     reyNegro.sumarPuntos(self)
-//     juegoAjedrez2.removerEvento(moverse)
-//     juegoAjedrez2.removerVisual(self)
-//     } else if(llegoFinal) {
-//     juegoAjedrez2.removerEvento(moverse)
-//     juegoAjedrez2.removerVisual(self)
-//     }
-//   }
-
-// }
-
 object spawnEnemigo {
+  var oleadaAnterior = null
+
   method comenzarSpawn() {
-    const spawn = new Tick(interval = 3000, action = {if(!juegoAjedrez2.estaPausado()) self.aparecerPieza()})
-    juegoAjedrez2.agregarEvento(spawn)
+    const oleadaInicial = new Tick(interval = 3000, action = {self.aparecerPieza()})
+    juegoAjedrez2.agregarEvento(oleadaInicial)
+    mensajeOleada.mostrarMensajeOleada()
+    oleadaAnterior = oleadaInicial
+  }
+
+  method comenzarOleadas() {
+    const oleadas = new Tick(interval = 30000, action = {
+      sistemaOleadas.nuevoTiempoSpawn(oleadaAnterior, oleadas)
+      mensajeOleada.mostrarMensajeOleada()
+    })
+    juegoAjedrez2.agregarEvento(oleadas)
+  }
+
+  method actualizarOleadaAnterior(nueva) {
+      oleadaAnterior = nueva
   }
 
   method aparecerPieza() {
@@ -419,145 +320,38 @@ object spawnEnemigo {
   }
 }
 
-// class ALFIL {
-//   var vida = 100
-//   const property puntaje = 125
-//   var position = game.at(8,0.randomUpTo(6))
-//   const property numeroAparicion = 3
+object sistemaOleadas {
+  var nroOleada = 0
+  method nroOleada() = nroOleada + 1
+  const listaTiempos = [2500,1500,1000]
 
-//   method position() = position
-//   method image() = "alfil.png" 
+  method nuevoTiempoSpawn(oleadaAnterior, eventoOleada) {
+    juegoAjedrez2.removerEvento(oleadaAnterior)
 
-//   method moverse() {
-//     if(position.x() == 1) {
-//       reyNegro.recibirDanio()
-//       game.removeVisual(self)
-//     } else {
-//       if(vida >= 25) {
-//         self.moverseArribaOAbajo()
-//         position = position.left(1)
-//       } else {
-//         position = position.left(1)
-//       }
-//     }
-//   }
+    const spawn = new Tick(interval = listaTiempos.get(nroOleada), action = {spawnEnemigo.aparecerPieza()})
+    juegoAjedrez2.agregarEvento(spawn)
 
-//   method recibirDanio() {
-//     vida = 0.max(vida - 25)
-//   }
-//   method morir() {
-//     if(vida == 0) {
-//       reyNegro.sumarPuntos(self)
-//       game.removeVisual(self)
-//     }
-//   }
+    if(nroOleada != 3) {
+      nroOleada += 1 
+      spawnEnemigo.actualizarOleadaAnterior(spawn)
+    } else {
+      juegoAjedrez2.removerEvento(eventoOleada)
+    }
+  }
 
-//   method moverseArribaOAbajo() {
-//     var numero = 0.randomUpTo(3)
+}
 
-//     if(position.y() == 5) {
-//       position = position.down(1)
-//     } else {
-//       if(position.y() == 0) {
-//         position = position.up(1)
-//       } else {
-//         if(numero == 1) {
-//       position = position.up(1)
-//         } else {
-//           position = position.down(1)
-//         }
-//       }
-//     }
-//   }
-// }
+object mensajeOleada {
+  method position() = game.center()
+  method text() = "OLEADA NUMERO " + sistemaOleadas.nroOleada()
+  method textColor() = "D02323" 
 
-// class TORRE {
-//   var vida = 200
-//   const property puntaje = 175
-//   var position = game.at(8,0.randomUpTo(6))
-//   const property numeroAparicion = 4
+  method mostrarMensajeOleada() {
+    juegoAjedrez2.agregarVisual(self)
+    game.schedule(1500, {juegoAjedrez2.removerVisual(self)})
+  }
 
-//   method position() = position
-//   method image() = "torre.png" 
-
-//   method moverse() {
-//     if(position.x() == 1) {
-//       reyNegro.recibirDanio()
-//       game.removeVisual(self)
-//     } else {
-//       position = position.left(1)
-//     }
-//   }
-
-//   method recibirDanio() {
-//     vida = 0.max(vida - 25)
-//   }
-//   method morir() {
-//     if(vida == 0) {
-//       reyNegro.sumarPuntos(self)
-//       game.removeVisual(self)
-//     }
-//   }
-// }
-
-// class REINA {
-//   var vida = 175
-//   const property puntaje = 200
-//   var position = game.at(8,0.randomUpTo(6))
-//   const property numeroAparicion = 5
-
-//   method position() = position
-//   method image() = "reina.png" 
-
-//   method moverse() {
-//     if(position.x() == 1) {
-//       reyNegro.recibirDanio()
-//       game.removeVisual(self)
-//     } else {
-//       if(vida >= 25) {
-//         self.moverseArribaOAbajo()
-//         position = position.left(1)
-//       } else {
-//         position = position.left(1)
-//       }
-//     }
-//   }
-
-//   method recibirDanio() {
-//     vida = 0.max(vida - 25)
-//   }
-//   method morir() {
-//     if(vida == 0) {
-//       reyNegro.sumarPuntos(self)
-//       game.removeVisual(self)
-//     }
-//   }
-
-//   method moverseArribaOAbajo() {
-//     var numero = 0.randomUpTo(3)
-
-//     if(position.y() == 5) {
-//       position = position.down(1)
-//     } else {
-//       if(position.y() == 0) {
-//         position = position.up(1)
-//       } else {
-//         if(numero == 1) {
-//       position = position.up(1)
-//         } else {
-//           position = position.down(1)
-//         }
-//       }
-//     }
-//   }
-// }
-
-// const caballo1 = new CABALLO()
-// const alfil1 = new ALFIL()
-// const torre1 = new TORRE()
-// const reina1 = new REINA()
-
-// Caballo -> Mueve rapido
-// Alfin -> Al tener 25% se mueve arriba o abajo
-// Torre -> Mucha vida
-// Rey -> Mucha vida, mueve rapido y cada vez que le pegan se mueve para arriba o abajo
+}
+// ALFIL = MUEVE EN DIAGONAL PERO VA REBOTANDO
+// TORRE = MUCHA VIDA Y MUEVE MAS LENTO
+// REINA = MOVIMIENTO DEL CABALLO Y MAS VIDA
