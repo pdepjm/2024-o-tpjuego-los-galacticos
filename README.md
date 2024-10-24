@@ -45,4 +45,4 @@ Por otro lado, en la función spawnEnemigo() también usamos polimorfismo para e
 Finalmente, en el objeto spawnEnemigo usamos una lista de funciones, lo que hace mucho más fácil la creación de enemigos. Al poner algo como const pieza = [new Peon(), new Caballo()].anyOne(), logramos que la función sea más simple, corta y flexible. Si en el futuro queremos agregar una nueva pieza, solo tenemos que sumarla a la lista, sin cambiar casi nada del código.
 
 ## Diagrama de Clases
-![Diagrama Clases Tp Juego](https://github.com/user-attachments/assets/0bd99893-63bb-4416-9bb6-6bb5a2641431)
+![Diagrama Clases Tp Juego](assets/DiagramaClasesTpJuego.png)
