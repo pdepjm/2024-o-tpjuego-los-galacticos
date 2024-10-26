@@ -17,12 +17,18 @@ object juegoAjedrez2{
     game.height(5)
 	  game.width(9)
 
-    self.agregarPersonaje(reyNegro)
     game.boardGround("fondo.png")
+    menuInical.agregarMenuInicio()
+    juegoPausado = true
+    self.inicarTeclasUnicaVez()
+    
+  }
+
+  method comenzarJuego() {
+    juegoPausado = false
+    self.agregarPersonaje(reyNegro)
     spawnEnemigo.comenzarSpawn()
     spawnEnemigo.comenzarOleadas()
-    self.inicarTeclasUnicaVez()
-
   }
 
   method inicarTeclasUnicaVez() {
@@ -30,21 +36,34 @@ object juegoAjedrez2{
       keyboard.w().onPressDo({reyNegro.moverArriba()})
       keyboard.s().onPressDo({reyNegro.moverAbajo()})
       keyboard.space().onPressDo({reyNegro.disparar()})
-      keyboard.p().onPressDo({
-        if(!juegoPausado) {
-            self.pausarJuego() 
-            pausa.agregarTextoDePausa()
-            }
-        else self.reanudarJuego()
-      })
+      keyboard.p().onPressDo(
+        {
+          if(!juegoPausado && !menuInical.estaEnMenu()) {
+              self.pausarJuego() 
+              pausa.agregarTextoDePausa()
+              }
+          else self.reanudarJuego()
+        }
+      )
       keyboard.r().onPressDo(
-        { if(juegoTerminado) {
+        { 
+          if(juegoTerminado) {
           reyNegro.reiniciarPersonaje()
+          sistemaOleadas.reiniciarOleadas()
           self.removerVisual(puntajeFinal)
           self.iniciar()
           juegoPausado = false
           }  
-        })
+        }
+      )
+      keyboard.enter().onPressDo(
+        {
+          if(menuInical.estaEnMenu()) {
+            menuInical.quitarMenuInicio()
+            self.comenzarJuego()
+          }
+        }
+      )
       nroJuego += 1
     }
   }
@@ -94,6 +113,23 @@ object juegoAjedrez2{
     juegoTerminado = true
   }
   
+}
+
+object menuInical {
+  var estaEnMenu = false
+  method estaEnMenu() = estaEnMenu 
+  method position() = game.center() 
+  method text() = "PRESIONE ENTER PARA EMPEZAR"
+  method color() = "000000"
+
+  method agregarMenuInicio() {
+    juegoAjedrez2.agregarVisual(self)
+    estaEnMenu = true
+  }
+  method quitarMenuInicio() {
+    juegoAjedrez2.removerVisual(self)
+    estaEnMenu = false
+  }
 }
 
 object reyNegro {
@@ -295,7 +331,7 @@ object spawnEnemigo {
   var oleadaAnterior = null
 
   method comenzarSpawn() {
-    const oleadaInicial = new Tick(interval = 3000, action = {self.aparecerPieza()})
+    const oleadaInicial = new Tick(interval = 3000, action = {if(!juegoAjedrez2.estaPausado()) self.aparecerPieza()})
     juegoAjedrez2.agregarEvento(oleadaInicial)
     mensajeOleada.mostrarMensajeOleada()
     oleadaAnterior = oleadaInicial
@@ -303,8 +339,10 @@ object spawnEnemigo {
 
   method comenzarOleadas() {
     const oleadas = new Tick(interval = 30000, action = {
+      if(!juegoAjedrez2.estaPausado()) {
       sistemaOleadas.nuevoTiempoSpawn(oleadaAnterior, oleadas)
       mensajeOleada.mostrarMensajeOleada()
+      }
     })
     juegoAjedrez2.agregarEvento(oleadas)
   }
@@ -328,7 +366,7 @@ object sistemaOleadas {
   method nuevoTiempoSpawn(oleadaAnterior, eventoOleada) {
     juegoAjedrez2.removerEvento(oleadaAnterior)
 
-    const spawn = new Tick(interval = listaTiempos.get(nroOleada), action = {spawnEnemigo.aparecerPieza()})
+    const spawn = new Tick(interval = listaTiempos.get(nroOleada), action = {if(!juegoAjedrez2.estaPausado()) spawnEnemigo.aparecerPieza()})
     juegoAjedrez2.agregarEvento(spawn)
 
     if(nroOleada != 3) {
@@ -337,6 +375,10 @@ object sistemaOleadas {
     } else {
       juegoAjedrez2.removerEvento(eventoOleada)
     }
+  }
+
+  method reiniciarOleadas() {
+    nroOleada = 0
   }
 
 }
