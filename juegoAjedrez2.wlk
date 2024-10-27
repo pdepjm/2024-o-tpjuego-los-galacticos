@@ -174,7 +174,7 @@ object reyNegro {
   method recibirDanio(danio) {
     vida = vida - danio
     vida = 0.max(vida)
-    game.say(self, "Mi vida es de " + vida)
+    game.say(self, "VIDA =  " + vida)
     self.morir()
   }
 
@@ -301,18 +301,18 @@ class PiezaBlanca {
 
 }
 
-class Peon inherits PiezaBlanca(vida = 100, puntajeDado = 50, danioAEfectuar = 100) {
+class Peon inherits PiezaBlanca(vida = 100, puntajeDado = 50, danioAEfectuar = 25) {
   method image() = "peon.png" 
 }
 
-class Caballo inherits PiezaBlanca(vida = 75, puntajeDado = 100, danioAEfectuar = 15) {
+class Caballo inherits PiezaBlanca(vida = 75, puntajeDado = 75, danioAEfectuar = 15) {
   var imagenActual = "caballo.png"
   method image() = imagenActual
 
   override method accionExtra() {
     if(position.y() == 0) {
       position = position.up(1)
-    } else if(position.y() == 4) {
+    } else if(position.y() == game.height()-1) {
       position = position.down(1)
     } else {
       position = [position.up(1),position.down(1)].anyOne()
@@ -327,11 +327,42 @@ class Caballo inherits PiezaBlanca(vida = 75, puntajeDado = 100, danioAEfectuar 
   
 }
 
+class Torre inherits PiezaBlanca(vida = 200, puntajeDado = 100, danioAEfectuar = 50, moverse = new Tick(interval = 3500, action = {self.moverse()})) {
+  method image() = "torre.png"
+}
+
+class Alfil inherits PiezaBlanca(vida = 100, puntajeDado = 75, danioAEfectuar = 35) {
+  var movimiento = [1,2].anyOne()
+  method image() = "alfil.png"
+
+  override method accionExtra() {
+    if(position.y() == 0 || movimiento == 1) {
+      self.moverseTodoParaArriba()
+    }
+    if(position.y() == game.height() || movimiento == 2) {
+      self.moverseTodoParaAbajo()
+    }
+  } 
+  method moverseTodoParaArriba() {
+    movimiento = 1
+    position = position.up(1)
+  }
+  method moverseTodoParaAbajo() {
+    movimiento = 2
+    position = position.down(1)
+  }
+}
+
+class Reina inherits Caballo(vida = 150, puntajeDado = 200, danioAEfectuar = 50, moverse = new Tick(interval = 2500, action = {self.moverse()})) {
+  override method image() = "reina.png"
+  override method consecuenciaDisparo() {}
+}
+
 object spawnEnemigo {
   var oleadaAnterior = null
 
   method comenzarSpawn() {
-    const oleadaInicial = new Tick(interval = 3000, action = {if(!juegoAjedrez2.estaPausado()) self.aparecerPieza()})
+    const oleadaInicial = new Tick(interval = 4500, action = {if(!juegoAjedrez2.estaPausado()) self.aparecerPieza()})
     juegoAjedrez2.agregarEvento(oleadaInicial)
     mensajeOleada.mostrarMensajeOleada()
     oleadaAnterior = oleadaInicial
@@ -352,7 +383,17 @@ object spawnEnemigo {
   }
 
   method aparecerPieza() {
-    const pieza = [new Peon(), new Caballo()].anyOne()
+    // PROBABILIDAD PIEZAS
+    // PEON = 30%
+    // CABALLO = 20%
+    // ALFIL = 20%
+    // TORRE = 20%
+    // REINA = 10%
+    const pieza = [new Peon(), new Peon(), new Peon()
+                  , new Caballo(), new Caballo()
+                  , new Alfil(), new Alfil() 
+                  ,new Torre(), new Torre()
+                  ,new Reina()].anyOne()
     juegoAjedrez2.agregarVisual(pieza)
     pieza.empezarMoverse()
   }
@@ -360,8 +401,14 @@ object spawnEnemigo {
 
 object sistemaOleadas {
   var nroOleada = 0
-  method nroOleada() = nroOleada + 1
-  const listaTiempos = [2500,1500,1000]
+  method nroOleada() {
+    if(nroOleada != 3) {
+      return nroOleada + 1
+    } else {
+      return "FINAL"
+    }
+  }
+  const listaTiempos = [4000,3000,1500]
 
   method nuevoTiempoSpawn(oleadaAnterior, eventoOleada) {
     juegoAjedrez2.removerEvento(oleadaAnterior)
@@ -385,7 +432,7 @@ object sistemaOleadas {
 
 object mensajeOleada {
   method position() = game.center()
-  method text() = "OLEADA NUMERO " + sistemaOleadas.nroOleada()
+  method text() = "OLEADA " + sistemaOleadas.nroOleada()
   method textColor() = "D02323" 
 
   method mostrarMensajeOleada() {
@@ -394,6 +441,3 @@ object mensajeOleada {
   }
 
 }
-// ALFIL = MUEVE EN DIAGONAL PERO VA REBOTANDO
-// TORRE = MUCHA VIDA Y MUEVE MAS LENTO
-// REINA = MOVIMIENTO DEL CABALLO Y MAS VIDA
