@@ -18,7 +18,7 @@ object juegoAjedrez2{
 	  game.width(9)
 
     game.boardGround("fondo.png")
-    menuInical.agregarMenuInicio()
+    menuInicial.agregarMenuInicio()
     juegoPausado = true
     self.inicarTeclasUnicaVez()
     
@@ -38,7 +38,7 @@ object juegoAjedrez2{
       keyboard.space().onPressDo({reyNegro.disparar()})
       keyboard.p().onPressDo(
         {
-          if(!juegoPausado && !menuInical.estaEnMenu()) {
+          if(!juegoPausado && !menuInicial.estaEnMenu() && !tablaPuntajes.estaEnTabla()) {
               self.pausarJuego() 
               pausa.agregarTextoDePausa()
               }
@@ -50,7 +50,7 @@ object juegoAjedrez2{
           if(juegoTerminado) {
           reyNegro.reiniciarPersonaje()
           sistemaOleadas.reiniciarOleadas()
-          self.removerVisual(puntajeFinal)
+          puntajeFinal.sacarPuntajeFinal()
           self.iniciar()
           juegoPausado = false
           }  
@@ -58,9 +58,21 @@ object juegoAjedrez2{
       )
       keyboard.enter().onPressDo(
         {
-          if(menuInical.estaEnMenu()) {
-            menuInical.quitarMenuInicio()
+          if(menuInicial.estaEnMenu()) {
+            menuInicial.sacarMenuInicial()
             self.comenzarJuego()
+          }
+        }
+      )
+      keyboard.t().onPressDo(
+        {
+          if(menuInicial.estaEnMenu()) {
+            menuInicial.sacarMenuInicial()
+            tablaPuntajes.agregarTablaPuntajes()
+          }
+          if(tablaPuntajes.estaEnTabla()) {
+            tablaPuntajes.sacarTablaPuntajes()
+            menuInicial.agregarMenuInicio()
           }
         }
       )
@@ -115,25 +127,113 @@ object juegoAjedrez2{
   
 }
 
-object menuInical {
+class Texto {
+  const posicion = game.center()
+  const color = "000000"
+  const texto
+
+  method position() = posicion
+  method textColor() = color
+  method text() = texto
+}
+
+object menuInicial {
   var estaEnMenu = false
   method estaEnMenu() = estaEnMenu 
-  method position() = game.center() 
-  method text() = "PRESIONE ENTER PARA EMPEZAR"
-  method color() = "000000"
+  const filaUno = new Texto(texto = "PRESIONE ENTER PARA EMPEZAR")
+  const filaDos = new Texto(texto = "PRESIONE T PARA VER TABLA DE PUNTOS", posicion = game.center().down(1))
 
   method agregarMenuInicio() {
-    juegoAjedrez2.agregarVisual(self)
+    juegoAjedrez2.agregarVisual(filaUno)
+    juegoAjedrez2.agregarVisual(filaDos)
     estaEnMenu = true
   }
-  method quitarMenuInicio() {
-    juegoAjedrez2.removerVisual(self)
+  method sacarMenuInicial() {
+    juegoAjedrez2.removerVisual(filaUno)
+    juegoAjedrez2.removerVisual(filaDos)
     estaEnMenu = false
   }
 }
 
+object tablaPuntajes {
+  var estaEnTabla = false
+  method estaEnTabla() = estaEnTabla
+  const tablaPuntos = [0,0,0]
+  const filaUno = new Texto(texto = "1ro ~~~ " + tablaPuntos.first() + " PUNTOS", posicion = game.center().up(1))
+  const filaDos = new Texto(texto = "2do ~~~ " + tablaPuntos.get(1) + " PUNTOS")
+  const filaTres = new Texto(texto = "3ro ~~~ " + tablaPuntos.last() + " PUNTOS", posicion = game.center().down(1))
+  const filaCuatro = new Texto(texto = "PRESIONE T PARA VOLVER AL MENU INICIAL", posicion = game.at(0, game.center().y()))
+
+  method actualizarTabla(puntaje) {
+    if(tablaPuntos.size() < 3) {
+      self.agregarATabla(puntaje)
+    } else if(tablaPuntos.last() < puntaje) {
+      tablaPuntos.remove(tablaPuntos.last())
+      self.agregarATabla(puntaje)
+    } 
+  }
+  method agregarATabla(puntaje) {
+    tablaPuntos.add(puntaje)
+    tablaPuntos.sortBy({a,b => a < b})
+  }
+  
+  method agregarTablaPuntajes() {
+    juegoAjedrez2.agregarVisual(filaUno)
+    juegoAjedrez2.agregarVisual(filaDos)
+    juegoAjedrez2.agregarVisual(filaTres)
+    juegoAjedrez2.agregarVisual(filaCuatro)
+    estaEnTabla = true
+  }
+  method sacarTablaPuntajes() {
+    estaEnTabla = false
+    juegoAjedrez2.removerVisual(filaUno)
+    juegoAjedrez2.removerVisual(filaDos)
+    juegoAjedrez2.removerVisual(filaTres)
+    juegoAjedrez2.removerVisual(filaCuatro)
+  }
+}
+
+
+object puntajeFinal {
+  var puntaje = 0
+  const filaUno = new Texto(texto = "EL PUNTAJE FUE DE " + puntaje + " PUNTOS", color = "D02323" )
+  const filaDos = new Texto(texto = "PRESIONE R PARA VOLVER AL MENU INICIAL", color = "D02323" )
+
+  method actualizarPuntaje() {
+    puntaje = reyNegro.puntaje()
+    tablaPuntajes.actualizarTabla(puntaje)    
+  }
+  method agregarPuntajeFinal() {
+    juegoAjedrez2.agregarVisual(filaUno)
+    filaDos.moverAbajo(1)
+    juegoAjedrez2.agregarVisual(filaDos)
+  }
+  method terminarJuego() {
+    self.actualizarPuntaje()
+    juegoAjedrez2.terminarJuego()
+    self.agregarPuntajeFinal()
+  }
+  method sacarPuntajeFinal() {
+    juegoAjedrez2.removerVisual(filaUno)
+    juegoAjedrez2.removerVisual(filaDos)
+  }
+}
+
+object pausa{
+  method position() = game.center()
+  method text() = "ESTAS EN PAUSA, PRESIONE P PARA SEGUIR JUGANDO"
+  method textColor() = "D02323"
+  
+  method agregarTextoDePausa() {
+    juegoAjedrez2.agregarVisual(self)
+  }
+  method quitarTextoPausa() {
+    juegoAjedrez2.removerVisual(self)
+  }
+}
+
 object reyNegro {
-  var vida = 100
+  var vida = 1
   var puntaje = 0
   var position = game.at(0,2)
   var cooldown = 1
@@ -193,35 +293,6 @@ object reyNegro {
     vida = 100
     puntaje = 0
     position = game.at(0,2)
-  }
-}
-
-object puntajeFinal {
-  var puntaje = 0
-  method position() = game.center()
-  method text() = "EL PUNTAJE FUE DE " + puntaje + " PUNTOS, PRESIONE R PARA REINICIAR"
-  method textColor() = "D02323" 
-
-  method actualizarPuntaje() {
-    puntaje = reyNegro.puntaje()
-  }
-  method terminarJuego() {
-    self.actualizarPuntaje()
-    juegoAjedrez2.terminarJuego()
-    juegoAjedrez2.agregarVisual(self)
-  }
-}
-
-object pausa{
-  method position() = game.center()
-  method text() = "ESTAS EN PAUSA, PRESIONE P PARA SEGUIR JUGANDO"
-  method textColor() = "D02323"
-  
-  method agregarTextoDePausa() {
-    juegoAjedrez2.agregarVisual(self)
-  }
-  method quitarTextoPausa() {
-    juegoAjedrez2.removerVisual(self)
   }
 }
 
