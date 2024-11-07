@@ -51,3 +51,4 @@ Finalmente el ultimo concepto del paradigma de objetos que usamos en nuestro tp 
 :)
 
 ## Diagrama de Clases
+[Diagrama Clases Tp Juego.pdf](https://github.com/user-attachments/files/17655552/Diagrama.Clases.Tp.Juego.pdf)
