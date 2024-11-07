@@ -1,4 +1,9 @@
-import juegoAjedrez2.*
+import juegoAjedrez.*
+import wollok.game.*
+import main.*
+import piezasBlancas.*
+import reyNegro.*
+import spawn.*
 
 describe "TESTS DE REY NEGRO" {
 

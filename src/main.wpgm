@@ -1,6 +1,5 @@
 import wollok.game.*
-
-import juegoAjedrez2.*
+import juegoAjedrez.*
 
 program Ajedrez2 {
 	juegoAjedrez2.iniciar()
