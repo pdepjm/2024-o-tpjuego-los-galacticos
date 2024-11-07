@@ -39,14 +39,14 @@ object juegoAjedrez2{
     if(nroJuego == 1) {
       keyboard.w().onPressDo({reyNegro.moverArriba()})
       keyboard.s().onPressDo({reyNegro.moverAbajo()})
-      keyboard.space().onPressDo({reyNegro.disparar()})
+      keyboard.space().onPressDo({if(!juegoPausado && !juegoTerminado) reyNegro.disparar()})
       keyboard.p().onPressDo(
         {
-          if(!juegoPausado && !menuInicial.estaEnMenu() && !tablaPuntajes.estaEnTabla()) {
+          if(!juegoPausado && !juegoTerminado) {
               self.pausarJuego() 
               pausa.agregarTextoDePausa()
               }
-          else self.reanudarJuego()
+          else if(!menuInicial.estaEnMenu() && !tablaPuntajes.estaEnTabla()) self.reanudarJuego()
         }
       )
       keyboard.r().onPressDo(
@@ -56,7 +56,6 @@ object juegoAjedrez2{
           sistemaOleadas.reiniciarOleadas()
           puntajeFinal.sacarPuntajeFinal()
           self.iniciar()
-          juegoPausado = false
           }  
         }
       )
@@ -105,9 +104,6 @@ object juegoAjedrez2{
     game.removeVisual(personaje)
     listaPersonajes.remove(personaje)    
   }
-  method bloquearTeclasMovimientoRey() {
-    
-  }
 
   method pausarJuego() { 
       juegoPausado = true
@@ -125,5 +121,8 @@ object juegoAjedrez2{
     listaPersonajes.forEach({personaje => self.removerPersonaje(personaje)})
     juegoTerminado = true
   }
+
+  // Funcion Test
+  method listaVisuales() = listaVisuales 
   
 }

@@ -43,9 +43,7 @@ object tablaPuntajes {
   const filaCuatro = new Texto(texto = "PRESIONE T PARA VOLVER AL MENU INICIAL", posicion = game.at(4,0))
 
   method actualizarTabla(puntaje) {
-    if(tablaPuntos.size() < 3) {
-      self.agregarATabla(puntaje)
-    } else if(tablaPuntos.last() < puntaje) {
+    if(tablaPuntos.last() < puntaje) {
       tablaPuntos.remove(tablaPuntos.last())
       self.agregarATabla(puntaje)
     } 
@@ -75,7 +73,6 @@ object tablaPuntajes {
     menuInicial.agregarMenuInicio()
   }
 }
-
 
 object puntajeFinal {
   var puntaje = 0

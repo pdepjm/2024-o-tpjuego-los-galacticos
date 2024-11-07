@@ -32,9 +32,11 @@ El objetivo del juego es controlar al rey negro y sobrevivir la mayor cantidad d
 - `Space` para disparar
 - `P` para pausar el juego
 - `R` para reiniciar el juego una vez terminado
+- `T` para mostrar la tabla de puntajes
+- `Enter` para iniciar el juego
 
 ## Como implementamos los conceptos del paradigama?
-En nuestro juego aplicamos varios conceptos del paradigma orientado a objetos, como el polimorfismo entre distintas clases u objetos, y la idea de que todo es un objeto, incluidas las funciones.
+En nuestro juego aplicamos varios conceptos del paradigma orientado a objetos, como el polimorfismo entre distintas clases u objetos, la idea de que todo es un objeto, incluidas las funciones, y la herencia entre clases.
 
 El polimorfismo se puede ver principalmente en dos casos: en el método reaccionar(objeto, bala) que tiene el rey negro, y en el método aparecerPieza() del objeto spawnEnemigo.
 
@@ -42,7 +44,10 @@ En la función reaccionar(objeto, bala) usamos polimorfismo porque, en ese momen
 
 Por otro lado, en la función spawnEnemigo() también usamos polimorfismo para evitar hacer un número aleatorio y luego un montón de ifs para que, dependiendo del número, aparezca una pieza u otra. Al asignar directamente una pieza a una constante y luego hacer que esa constante entienda el mensaje empezarMoverse(), nos ahorramos repetir lógica y usamos un enfoque más acorde al paradigma.
 
-Finalmente, en el objeto spawnEnemigo usamos una lista de funciones, lo que hace mucho más fácil la creación de enemigos. Al poner algo como const pieza = [new Peon(), new Caballo()].anyOne(), logramos que la función sea más simple, corta y flexible. Si en el futuro queremos agregar una nueva pieza, solo tenemos que sumarla a la lista, sin cambiar casi nada del código.
+El otro concepto de objetos se puede ver en el objeto spawnEnemigo donde usamos una lista de funciones, lo que hace mucho más fácil la creación de enemigos. Al poner algo como const pieza = [new Peon(), new Caballo()].anyOne(), logramos que la función sea más simple, corta y flexible. Si en el futuro queremos agregar una nueva pieza, solo tenemos que sumarla a la lista, sin cambiar casi nada del código.
+
+Finalmente el ultimo concepto del paradigma de objetos que usamos en nuestro tp fue el de herencia. Esto se ve reflejado en la clase piezaBlanca, la cual contiene las bases del comportamiento general que comparten todas las piezas enemigas (movimiento, recepción de daño, entre otros). A partir de esta superclase, desarrollamos las distintas piezas (subclases), cada una con sus propias características y comportamientos unicos.
+
+:)
 
 ## Diagrama de Clases
-![Diagrama Clases Tp Juego](assets/DiagramaClasesTpJuego.png)

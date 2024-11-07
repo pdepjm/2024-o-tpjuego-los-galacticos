@@ -61,18 +61,50 @@ describe "TESTS DE PIEZAS BLANCAS" {
   
   test "El caballo se mueve uno para delante y uno para arriba o abajo" {
     const caballo = new Caballo()
-    const xIncial = caballo.position().x()
-    const yInical = caballo.position().y()
+    const xInicial = caballo.position().x()
+    const yInicial = caballo.position().y()
     caballo.moverse()
-    assert.notThat(caballo.position().x() == xIncial)
-    assert.that(caballo.position().y() == yInical + 1 || caballo.position().y() == yInical - 1)
+    assert.notThat(caballo.position().x() == xInicial)
+    assert.that(caballo.position().y() == yInicial + 1 || caballo.position().y() == yInicial - 1)
   }
 
-  // OJO CON ESTA, REVISAR
-  // test "La pieza desaparece al llegar a la columna del rey" {
-  //   const peon = new Peon()
-  //   peon.cambiarPosicion(game.at(1,2))
-  //   peon.moverse()
-  //   assert.notThat(peon)
-  // }
+  test "El alfil se mueve para arriba o para abajo y uno para adelante" {
+    const alfil = new Alfil()
+    const xInicial = alfil.position().x()
+    const yInicial = alfil.position().y()
+    alfil.moverse()
+    assert.notThat(alfil.position().x() == xInicial)
+    assert.that(alfil.position().y() == yInicial + 1 || alfil.position().y() == yInicial - 1)
+  }
+
+  test "La torre se mueve uno para adelante" {
+    const torre = new Torre()
+    const xInicial = torre.position().x()
+    torre.moverse()
+    assert.notEquals(xInicial, torre.position().x())
+  }
+
+  test "La reina se mueve igual que el caballo" {
+    const reina = new Reina()
+    const xInicial = reina.position().x()
+    const yInicial = reina.position().y()
+    reina.moverse()
+    assert.notEquals(xInicial, reina.position().x())
+    assert.that(reina.position().y() == yInicial + 1 || reina.position().y() == yInicial - 1)
+  }
+
+  test "La reina aumenta el danio cuando le disparan" {
+    const reina = new Reina()
+    const danioInicial = reina.danio()
+    const bala = new Bala()
+    reyNegro.reaccionar(reina, bala)
+    assert.notEquals(danioInicial, reina.danio())
+  }
+
+  test "La pieza desaparece al llegar a la columna del rey" {
+    const peon = new Peon()
+    peon.cambiarPosicion(game.at(1,2))
+    peon.moverse()
+    assert.notThat(juegoAjedrez2.listaVisuales().contains(peon))
+  }
 }

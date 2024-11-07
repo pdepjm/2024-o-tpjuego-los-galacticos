@@ -7,7 +7,7 @@ import menu.*
 
 
 object reyNegro {
-  var vida = 1
+  var vida = 100
   var puntaje = 0
   var position = game.at(0,2)
   var cooldown = 1
@@ -71,7 +71,7 @@ object reyNegro {
 }
 
 class Bala {
-  const moverse = new Tick(interval = 200, action = {self.moverse()})
+  const moverse = new Tick(interval = 200, action = {if(!juegoAjedrez2.estaPausado()) self.moverse()})
   var position = reyNegro.position().right(1)
 
   method image() = "bala.png" 

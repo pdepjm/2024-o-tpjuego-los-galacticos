@@ -54,7 +54,7 @@ object sistemaOleadas {
       return "FINAL"
     }
   }
-  const listaTiempos = [4000,3000,1500]
+  const listaTiempos = [4000,3000,1000]
 
   method nuevoTiempoSpawn(oleadaAnterior, eventoOleada) {
     juegoAjedrez2.removerEvento(oleadaAnterior)

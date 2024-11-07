@@ -55,7 +55,7 @@ class PiezaBlanca {
   // FUNCIONES PARA TESTS
   method vida() = vida
   method cambiarPosicion(posicion) {position = posicion}
-
+  method danio() = danioAEfectuar
 }
 
 class Peon inherits PiezaBlanca(vida = 100, puntajeDado = 50, danioAEfectuar = 25) {
@@ -86,35 +86,36 @@ class Caballo inherits PiezaBlanca(vida = 75, puntajeDado = 75, danioAEfectuar =
 
 class Torre inherits PiezaBlanca(vida = 200, puntajeDado = 100, danioAEfectuar = 50, moverse = new Tick(interval = 3500, action = {self.moverse()})) {
   method image() = "torre.png"
+  override method consecuenciaDisparo(){}
 }
 
-class Alfil inherits PiezaBlanca(vida = 100, puntajeDado = 75, danioAEfectuar = 35) {
-  var movimiento = [1,2].anyOne()
+class Alfil inherits PiezaBlanca(vida = 100, puntajeDado = 75, danioAEfectuar = 35, moverse = new Tick(interval = 3500, action = {if(!stun) self.moverse()})) {
+  var movimiento = [1,2].anyOne() // 1 = Moverse siempre hacia arriba || 2 = Moverse siempre hacia abajo
+  var stun = false
   method image() = "alfil.png"
 
   override method accionExtra() {
-    if(position.y() == 0 || movimiento == 1) {
-      self.moverseTodoParaArriba()
+    if(position.y() == 0) {
+      movimiento = 1
+    } else if(position.y() == game.height() - 1) {
+      movimiento = 2
     }
-    if(position.y() == game.height() || movimiento == 2) {
-      self.moverseTodoParaAbajo()
+    
+    if(movimiento == 1) {
+      position = position.up(1)
+    } else if(movimiento == 2) {
+      position = position.down(1)
     }
   } 
-  method moverseTodoParaArriba() {
-    movimiento = 1
-    position = position.up(1)
-  }
-  method moverseTodoParaAbajo() {
-    movimiento = 2
-    position = position.down(1)
-  }
 
   override method consecuenciaDisparo() {
-    //desarrollar consecuencia (la idea era que se quede quieto un segundo)
+    stun = true
+    game.schedule(1000, {stun = false})
+    // cambiar imagen a una con pajaritos en la cabeza
   }
 }
 
-class Reina inherits Caballo(vida = 150, puntajeDado = 200, danioAEfectuar = 50, moverse = new Tick(interval = 2500, action = {self.moverse()})) {
+class Reina inherits Caballo(vida = 150, puntajeDado = 200, danioAEfectuar = 50, moverse = new Tick(interval = 1000, action = {self.moverse()})) {
   override method image() = "reina.png"
   override method consecuenciaDisparo() {
     //imagenActual = "reinadañada.png"
