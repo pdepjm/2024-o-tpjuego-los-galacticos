@@ -35,11 +35,13 @@ object spawnEnemigo {
     // ALFIL = 20%
     // TORRE = 20%
     // REINA = 10%
-    const pieza = [new Peon(), new Peon(), new Peon()
-                  , new Caballo(), new Caballo()
-                  , new Alfil(), new Alfil() 
-                  ,new Torre(), new Torre()
-                  ,new Reina()].anyOne()
+    // const pieza = [new Peon(), new Peon(), new Peon()
+    //               , new Caballo(), new Caballo()
+    //               , new Alfil(), new Alfil() 
+    //               ,new Torre(), new Torre()
+    //               ,new Reina()].anyOne()
+
+    const pieza = [new Reina()].anyOne()
     juegoAjedrez2.agregarVisual(pieza)
     pieza.empezarMoverse()
   }

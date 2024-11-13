@@ -47,10 +47,7 @@ class PiezaBlanca {
     }
   }
 
-  method consecuenciaDisparo() {
-    position = position.right(1)
-  }
-
+  method consecuenciaDisparo()
 
   // FUNCIONES PARA TESTS
   method vida() = vida
@@ -59,7 +56,14 @@ class PiezaBlanca {
 }
 
 class Peon inherits PiezaBlanca(vida = 100, puntajeDado = 50, danioAEfectuar = 25) {
-  method image() = "peon.png" 
+  var imagenActual = "peon.png"
+  method image() = imagenActual
+
+  override method consecuenciaDisparo() {
+    position = position.right(1)
+    imagenActual = "peonGolpeado.png"
+    game.schedule(1000, { imagenActual = "peon.png" }) 
+  }
 }
 
 class Caballo inherits PiezaBlanca(vida = 75, puntajeDado = 75, danioAEfectuar = 15) {
@@ -77,22 +81,22 @@ class Caballo inherits PiezaBlanca(vida = 75, puntajeDado = 75, danioAEfectuar =
   }
 
   override method consecuenciaDisparo() {
-    imagenActual = "caballodañado.png"
-    game.schedule(1000, { imagenActual = "caballo.png" }) 
+    imagenActual = "caballoGolpeado.png"
   }
-
-  
 }
 
 class Torre inherits PiezaBlanca(vida = 200, puntajeDado = 100, danioAEfectuar = 50, moverse = new Tick(interval = 3500, action = {self.moverse()})) {
-  method image() = "torre.png"
-  override method consecuenciaDisparo(){}
+  var imagenActual = "torre.png"
+  method image() = imagenActual  override method consecuenciaDisparo(){
+    imagenActual = "torreGolpeada.png"
+  }
 }
 
 class Alfil inherits PiezaBlanca(vida = 100, puntajeDado = 75, danioAEfectuar = 35, moverse = new Tick(interval = 3500, action = {if(!stun) self.moverse()})) {
   var movimiento = [1,2].anyOne() // 1 = Moverse siempre hacia arriba || 2 = Moverse siempre hacia abajo
   var stun = false
-  method image() = "alfil.png"
+  var imagenActual = "alfil.png"
+  method image() = imagenActual
 
   override method accionExtra() {
     if(position.y() == 0) {
@@ -109,17 +113,18 @@ class Alfil inherits PiezaBlanca(vida = 100, puntajeDado = 75, danioAEfectuar = 
   } 
 
   override method consecuenciaDisparo() {
+    imagenActual = "alfilGolpeado.png"
+    game.schedule(2000, { imagenActual = "alfil.png"}) 
     stun = true
-    game.schedule(1000, {stun = false})
-    // cambiar imagen a una con pajaritos en la cabeza
+    game.schedule(2000, {stun = false})
   }
 }
 
 class Reina inherits Caballo(vida = 150, puntajeDado = 200, danioAEfectuar = 50, moverse = new Tick(interval = 1000, action = {self.moverse()})) {
-  override method image() = "reina.png"
+  override method image() = imagen
+  var imagen = "reina.png"
   override method consecuenciaDisparo() {
-    //imagenActual = "reinadañada.png"
-    //game.schedule(1000, { imagenActual = "reina.png" }) 
+    imagen = "reinaGolpeada.png"
     danioAEfectuar *= 1.5
   }
 }

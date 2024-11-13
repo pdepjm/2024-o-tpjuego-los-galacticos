@@ -14,7 +14,7 @@ object reyNegro {
 
 
   method vida() = vida 
-  method image() = "reyNegro.png" 
+  method image() = "reyNegroEscopeta.png" 
   method puntaje() = puntaje
 
   method moverArriba() {
@@ -74,7 +74,7 @@ class Bala {
   const moverse = new Tick(interval = 200, action = {if(!juegoAjedrez2.estaPausado()) self.moverse()})
   var position = reyNegro.position().right(1)
 
-  method image() = "bala.png" 
+  method image() = "balaEscopeta.png" 
   method position() = position 
 
   method moverse() {
